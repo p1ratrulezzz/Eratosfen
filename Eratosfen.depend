@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1542749306 source:l:\scratch\cplusplus\eratosfen\main.cpp
+	<iostream>
+	<stdio.h>
+	<cstring>
+	<algorithm>
+	<ctime>
+	"lib/sqlite/sqlite3.h"
+
+1542539139 l:\scratch\cplusplus\eratosfen\lib\sqlite\sqlite3.h
+	<stdarg.h>
+
