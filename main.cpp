@@ -5,7 +5,7 @@
 #include <ctime>
 #include "lib/sqlite/sqlite3.h"
 
-#define LENGTH 10000000
+#define LENGTH 500
 #define uint unsigned int
 #define PRIME_CACHEFILE "primecache.db"
 
