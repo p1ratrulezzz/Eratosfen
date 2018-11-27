@@ -3,9 +3,11 @@
 #include <cstring>
 #include <algorithm>
 #include <ctime>
+#include <iomanip>
+#include <math.h>
 #include "lib/sqlite/sqlite3.h"
 
-#define LENGTH 500
+#define LENGTH 100000
 #define uint unsigned int
 #define PRIME_CACHEFILE "primecache.db"
 
@@ -18,7 +20,6 @@ bool is_prime(uint number) {
     static sqlite3_stmt* hstmt_prime_write;
 
     char* err = 0;
-    int testers[] = {2, 4, 6, 8};
 
     // Init database cache
     if (!init) {
@@ -53,8 +54,8 @@ bool is_prime(uint number) {
 
     bool prime = true;
     if (number != 2) {
-        for (int i=0; i<4; i++) {
-            if (number % testers[i] == 0) {
+        for (int i=2; i<9; i++) {
+            if (number % i == 0) {
                 prime = false;
                 break;
             }
@@ -118,17 +119,37 @@ int main()
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     begin = end;
 
-    int primes_found = 0, primes_checked = 0;
+    int primes_found = 0, primes_checked = 0, primes_not_found = 0;
+    int denominator = 3; // (uint) n / (n/3);
+    int last_percent = 0;
     for (uint i=2; i<n; i++) {
+        bool is_really_prime = is_prime(i);
         if (durshlag[i] == '1') {
             // Check if it is really prime
             primes_found++;
-            if (is_prime(i)) {
+            if (is_really_prime) {
                 primes_checked++;
             }
             else {
                 durshlag[i] = '2';
             }
+        }
+        else if(is_really_prime) {
+            durshlag[i] = '2';
+            primes_not_found++;
+        }
+
+        if (i % denominator == 0 || i < 10 || n-i < 10) {
+            double percent = (100*i)/(n-1);
+            if (percent != last_percent) {
+                /*
+                 * 100 - n
+                 * progress - i
+                 */
+                cout<<"Progress: "<< percent << "% ... " << '\r' << flush;
+            }
+
+            last_percent = (int) percent;
         }
     }
 
@@ -145,14 +166,14 @@ int main()
         }
 
         if (durshlag[i] == '2') {
-                cout<<i<<" is not prime"<<endl;
+            cout<<i<<" is not a prime"<<endl;
         }
     }
 
     cout
         <<"Total: "<<simpleCount<<endl
         <<"Total time: "<<elapsed_secs*1000<<"ms"<<endl<<endl
-        <<"Primes found: "<<primes_found<<"\nPrimes checked: "<<primes_checked<<endl
+        <<"Primes found: "<<primes_found<<"\nPrimes checked: "<<primes_checked<<"\nPrimes not found: "<<primes_not_found<<endl
         <<"Total time: "<<elapsed_secs_check*1000<<"ms"<<endl<<endl
         <<"Press any key to exit"<<endl;
 
